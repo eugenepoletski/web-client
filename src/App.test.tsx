@@ -9,7 +9,7 @@ describe('<App />', () => {
 
   it('starts with Dashboard page', () => {
     render(<App />);
-    expect(screen.getByText(/dashboard/i)).toBeTruthy();
+    expect(screen.getAllByText(/dashboard/i)).toHaveLength(1);
   });
 
   it('changes to Shopping List', () => {

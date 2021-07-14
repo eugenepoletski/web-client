@@ -29,6 +29,19 @@ const renderPageComponent = (
   return (<PageComponent />);
 };
 
+const navigationSchema = {
+  items: [
+    {
+      name: 'home',
+      title: 'Home',
+    },
+    {
+      name: 'shoppingList',
+      title: 'Shopping list',
+    },
+  ],
+};
+
 function App(): JSX.Element {
   const [current, send] = useMachine(controllerMachine);
 
@@ -38,7 +51,7 @@ function App(): JSX.Element {
 
   return (
     <div className="App">
-      <Navigation onClick={handleNavigationClick} />
+      <Navigation schema={navigationSchema} onClick={handleNavigationClick} />
       {renderPageComponent({ stateValue: current.value })}
     </div>
   );
