@@ -3,12 +3,11 @@ import { useMachine } from '@xstate/react';
 import { StateValue } from 'xstate';
 import controllerMachine,
 { STATE_DASHBOARD, STATE_SHOPPING_LIST } from './pagesMachine';
+import navigationSchema,
+{ NAV_HOME, NAV_SHOPPING_LIST } from './navigationSchema';
 import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
 import ShoppingList from './pages/ShoppingList';
-
-const NAV_HOME = 'home';
-const NAV_SHOPPING_LIST = 'shoppingList';
 
 const getStateByNavs = (name: string): StateValue | undefined => ({
   [NAV_HOME]: STATE_DASHBOARD,
@@ -28,19 +27,6 @@ const renderPageComponent = (
   const PageComponent = pageComponentByStateValues[state2str(stateValue)];
 
   return (<PageComponent />);
-};
-
-const navigationSchema = {
-  items: [
-    {
-      name: NAV_HOME,
-      title: 'Home',
-    },
-    {
-      name: NAV_SHOPPING_LIST,
-      title: 'Shopping list',
-    },
-  ],
 };
 
 function App(): JSX.Element {
