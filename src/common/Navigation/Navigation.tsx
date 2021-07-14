@@ -11,6 +11,7 @@ const Navigation: React.FC<Props> = ({
     <ul>
       <li>
         <button
+          name="home"
           onClick={(evt) => onClick(evt, { name: 'home' })}
           type="button"
         >
@@ -19,6 +20,7 @@ const Navigation: React.FC<Props> = ({
       </li>
       <li>
         <button
+          name="shoppingList"
           onClick={(evt) => onClick(evt, { name: 'shoppingList' })}
           type="button"
         >

@@ -6,18 +6,17 @@ import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
 import ShoppingList from './pages/ShoppingList';
 
+const getStateByNavName = (name: string): string | undefined => ({
+  home: DASHBOARD,
+  shoppingList: SHOPPING_LIST,
+})[name];
+
 function App(): JSX.Element {
   const [current, send] = useMachine(controllerMachine);
 
-  const handleNavigationClick = useCallback((evt, { name }) => {
-    if (name === 'home') {
-      return send(DASHBOARD);
-    }
-    if (name === 'shoppingList') {
-      return send(SHOPPING_LIST);
-    }
-    return undefined;
-  }, [send]);
+  const handleNavigationClick = useCallback((
+    evt, { name },
+  ) => send(getStateByNavName(name) || ''), [send]);
 
   return (
     <div className="App">
