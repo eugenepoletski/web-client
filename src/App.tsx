@@ -1,7 +1,7 @@
 import React, { useCallback } from 'react';
 import { useMachine } from '@xstate/react';
 import controllerMachine,
-{ DASHBOARD, SHOPPING_LIST } from './controllerMachine';
+{ DASHBOARD, SHOPPING_LIST } from './pagesMachine';
 import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
 import ShoppingList from './pages/ShoppingList';
@@ -10,6 +10,17 @@ const getStateByNavName = (name: string): string | undefined => ({
   home: DASHBOARD,
   shoppingList: SHOPPING_LIST,
 })[name];
+
+const Page = ({ name }: { name: string }): JSX.Element | null => {
+  switch (name) {
+    case DASHBOARD:
+      return <Dashboard />;
+    case SHOPPING_LIST:
+      return <ShoppingList />;
+    default:
+      return null;
+  }
+};
 
 function App(): JSX.Element {
   const [current, send] = useMachine(controllerMachine);
@@ -21,8 +32,7 @@ function App(): JSX.Element {
   return (
     <div className="App">
       <Navigation onClick={handleNavigationClick} />
-      {current.matches(DASHBOARD) && <Dashboard />}
-      {current.matches(SHOPPING_LIST) && <ShoppingList />}
+      <Page name={`${current.value}`} />
     </div>
   );
 }
