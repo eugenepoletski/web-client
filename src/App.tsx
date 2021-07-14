@@ -2,29 +2,30 @@ import React, { useCallback } from 'react';
 import { useMachine } from '@xstate/react';
 import { StateValue } from 'xstate';
 import controllerMachine,
-{ DASHBOARD, SHOPPING_LIST } from './pagesMachine';
+{ STATE_DASHBOARD, STATE_SHOPPING_LIST } from './pagesMachine';
 import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
 import ShoppingList from './pages/ShoppingList';
 
-// ToDo! Rework Navigation component to define all the mapping
-// w/o having hardcoded page names
-const getStateByNavName = (name: string): StateValue | undefined => ({
-  home: DASHBOARD,
-  shoppingList: SHOPPING_LIST,
+const NAV_HOME = 'home';
+const NAV_SHOPPING_LIST = 'shoppingList';
+
+const getStateByNavs = (name: string): StateValue | undefined => ({
+  [NAV_HOME]: STATE_DASHBOARD,
+  [NAV_SHOPPING_LIST]: STATE_SHOPPING_LIST,
 })[name];
 
-const stateVal2Str = (stateVal: StateValue): string => String(stateVal);
+const state2str = (stateVal: StateValue): string => String(stateVal);
 
 const renderPageComponent = (
   { stateValue }: { stateValue: StateValue },
 ): JSX.Element => {
   const pageComponentByStateValues = {
-    [stateVal2Str(DASHBOARD)]: Dashboard,
-    [stateVal2Str(SHOPPING_LIST)]: ShoppingList,
+    [state2str(STATE_DASHBOARD)]: Dashboard,
+    [state2str(STATE_SHOPPING_LIST)]: ShoppingList,
   };
 
-  const PageComponent = pageComponentByStateValues[stateVal2Str(stateValue)];
+  const PageComponent = pageComponentByStateValues[state2str(stateValue)];
 
   return (<PageComponent />);
 };
@@ -32,11 +33,11 @@ const renderPageComponent = (
 const navigationSchema = {
   items: [
     {
-      name: 'home',
+      name: NAV_HOME,
       title: 'Home',
     },
     {
-      name: 'shoppingList',
+      name: NAV_SHOPPING_LIST,
       title: 'Shopping list',
     },
   ],
@@ -47,7 +48,7 @@ function App(): JSX.Element {
 
   const handleNavigationClick = useCallback((
     evt, { name },
-  ) => send(stateVal2Str(getStateByNavName(name) || '')), [send]);
+  ) => send(state2str(getStateByNavs(name) || '')), [send]);
 
   return (
     <div className="App">

@@ -1,20 +1,20 @@
 import { createMachine, StateValue } from 'xstate';
 
-export const DASHBOARD: StateValue = 'DASHBOARD';
-export const SHOPPING_LIST: StateValue = 'SHOPPING_LIST';
+export const STATE_DASHBOARD: StateValue = 'STATE_DASHBOARD';
+export const STATE_SHOPPING_LIST: StateValue = 'STATE_SHOPPING_LIST';
 
 const controllerMachine = createMachine({
   id: 'controllerMachine',
-  initial: DASHBOARD,
+  initial: STATE_DASHBOARD,
   states: {
-    [DASHBOARD]: {
+    [STATE_DASHBOARD]: {
       on: {
-        [SHOPPING_LIST]: SHOPPING_LIST,
+        [STATE_SHOPPING_LIST]: STATE_SHOPPING_LIST,
       },
     },
-    [SHOPPING_LIST]: {
+    [STATE_SHOPPING_LIST]: {
       on: {
-        [DASHBOARD]: DASHBOARD,
+        [STATE_DASHBOARD]: STATE_DASHBOARD,
       },
     },
   },
