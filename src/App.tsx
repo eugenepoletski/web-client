@@ -1,25 +1,32 @@
 import React, { useCallback } from 'react';
 import { useMachine } from '@xstate/react';
+import { StateValue } from 'xstate';
 import controllerMachine,
 { DASHBOARD, SHOPPING_LIST } from './pagesMachine';
 import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
 import ShoppingList from './pages/ShoppingList';
 
+// ToDo! Rework Navigation component to define all the mapping
+// w/o having hardcoded page names
 const getStateByNavName = (name: string): string | undefined => ({
   home: DASHBOARD,
   shoppingList: SHOPPING_LIST,
 })[name];
 
-const Page = ({ name }: { name: string }): JSX.Element | null => {
-  switch (name) {
-    case DASHBOARD:
-      return <Dashboard />;
-    case SHOPPING_LIST:
-      return <ShoppingList />;
-    default:
-      return null;
-  }
+const stateVal2Str = (stateVal: StateValue): string => String(stateVal);
+
+const renderPageComponent = (
+  { stateValue }: { stateValue: StateValue },
+): JSX.Element => {
+  const pageComponentByStateValues = {
+    [stateVal2Str(DASHBOARD)]: Dashboard,
+    [stateVal2Str(SHOPPING_LIST)]: ShoppingList,
+  };
+
+  const PageComponent = pageComponentByStateValues[stateVal2Str(stateValue)];
+
+  return (<PageComponent />);
 };
 
 function App(): JSX.Element {
@@ -32,7 +39,7 @@ function App(): JSX.Element {
   return (
     <div className="App">
       <Navigation onClick={handleNavigationClick} />
-      <Page name={`${current.value}`} />
+      {renderPageComponent({ stateValue: current.value })}
     </div>
   );
 }
