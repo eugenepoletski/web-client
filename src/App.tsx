@@ -9,7 +9,7 @@ import ShoppingList from './pages/ShoppingList';
 
 // ToDo! Rework Navigation component to define all the mapping
 // w/o having hardcoded page names
-const getStateByNavName = (name: string): string | undefined => ({
+const getStateByNavName = (name: string): StateValue | undefined => ({
   home: DASHBOARD,
   shoppingList: SHOPPING_LIST,
 })[name];
@@ -34,7 +34,7 @@ function App(): JSX.Element {
 
   const handleNavigationClick = useCallback((
     evt, { name },
-  ) => send(getStateByNavName(name) || ''), [send]);
+  ) => send(stateVal2Str(getStateByNavName(name) || '')), [send]);
 
   return (
     <div className="App">

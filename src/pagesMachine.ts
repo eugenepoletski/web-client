@@ -1,7 +1,7 @@
-import { createMachine } from 'xstate';
+import { createMachine, StateValue } from 'xstate';
 
-export const DASHBOARD = 'DASHBOARD';
-export const SHOPPING_LIST = 'SHOPPING_LIST';
+export const DASHBOARD: StateValue = 'DASHBOARD';
+export const SHOPPING_LIST: StateValue = 'SHOPPING_LIST';
 
 const controllerMachine = createMachine({
   id: 'controllerMachine',
