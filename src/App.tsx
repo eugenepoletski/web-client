@@ -7,7 +7,7 @@ import navigationSchema,
 { NAV_HOME, NAV_SHOPPING_LIST } from './navigationSchema';
 import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
-import ShoppingList from './pages/ShoppingList';
+import ShoppingList from './@aitiser/shopping-list';
 
 const getStateByNavs = (name: string): StateValue | undefined => ({
   [NAV_HOME]: STATE_DASHBOARD,
