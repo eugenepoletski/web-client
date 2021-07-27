@@ -51,9 +51,13 @@
     "eslint-plugin-react": "^7.24.0",
     "eslint-plugin-react-hooks": "^4.2.0",
     "husky": "^7.0.1",
-    "lint-staged": "^11.1.1"
+    "lint-staged": "^11.1.1",
+    "prettier": "^2.3.2"
   },
   "lint-staged": {
-    "**/*.ts?(x)": "eslint --cache --fix"
+    "**/*.ts?(x)": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ]
   }
 }
