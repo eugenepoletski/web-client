@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+
 import ListItem from './shoppingList/ListItem';
 
 export interface Item {
@@ -13,6 +14,7 @@ export interface Props {
 
 const ShoppingList = ({ service }: Props): JSX.Element => {
   const [items, setItems] = useState<Item[]>([]);
+  const [itemTitle, setItemTitle] = useState('');
 
   useEffect(() => {
     async function fetchItems(): Promise<any> {
@@ -41,9 +43,47 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
     };
   }, [service]);
 
+  const handleInputChange = useCallback((evt) => {
+    setItemTitle(evt.target.value);
+  }, []);
+
+  const handleAddItemClick = useCallback(() => {
+    async function createItem(): Promise<any> {
+      try {
+        const response = await service.createItem({
+          title: itemTitle,
+          completed: false,
+        });
+
+        switch (response.status) {
+          case 'success':
+            setItemTitle('');
+            // ToDo! refactor to listen for itemCreated ?
+            setItems([response.payload].concat(items.slice()));
+            break;
+          case 'fail':
+            console.warn(response);
+            break;
+        }
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+
+    createItem();
+  }, [itemTitle, items, service]);
+
   return (
     <div>
       <h1>Shopping list</h1>
+      <input
+        title="new item input"
+        value={itemTitle}
+        onChange={handleInputChange}
+      />
+      <button title="add item" type="button" onClick={handleAddItemClick}>
+        Add
+      </button>
       <ul>
         {items.map(({ id, title }) => (
           <ListItem key={id} title={title} />
