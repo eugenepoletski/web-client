@@ -1,77 +1,82 @@
-import Client from 'socket.io-client';
+import { io, Socket } from 'socket.io-client';
 
-export interface IServiceConfig {
+export interface ServiceConfig {
   baseUrl: string;
 }
 
-export interface IServiceSuccesResponse<T> {
+export interface SuccessResponse<T> {
   status: 'success';
   payload: T;
 }
 
-export interface IServiceFailResponse {
+export interface FailResponse {
   status: 'fail';
   payload: {
     [name: string]: string;
   };
 }
 
-export interface IServiceErrorResponse {
+export interface ErrorResponse {
   status: 'error';
   message: string;
 }
 
-export type IServiceResponse<T> =
-  | IServiceSuccesResponse<T>
-  | IServiceFailResponse
-  | IServiceFailResponse;
+export type Response<T> = SuccessResponse<T> | FailResponse | ErrorResponse;
 
-export interface IItem {
+export interface Item {
   id: string;
   title: string;
   completed: boolean;
 }
 
-export interface IItemInfo {
+export interface ItemInfo {
   title: string;
+  completed?: boolean;
 }
 
 export class Service {
-  private socket: any;
+  private socket: Socket;
 
-  constructor({ baseUrl }: IServiceConfig) {
-    this.socket = Client(baseUrl, {
+  constructor({ baseUrl }: ServiceConfig) {
+    this.socket = io(baseUrl, {
       autoConnect: false,
     });
   }
 
-  public start(): Promise<any> {
+  public start(): Promise<void> {
     return new Promise((res, rej) => {
-      this.socket.on('connect', () => res({}));
+      this.socket.on('connect', () => res());
       this.socket.connect();
     });
   }
 
-  public stop(): Promise<any> {
+  public stop(): Promise<void> {
     return new Promise((resolve, reject) => {
       this.socket.close();
-      resolve({});
+      resolve();
     });
   }
 
-  public createItem(itemInfo: IItemInfo): Promise<IServiceResponse<IItem>> {
+  public createItem(itemInfo: ItemInfo): Promise<SuccessResponse<Item>> {
     return new Promise((resolve, reject) => {
-      this.socket.emit('shoppingListItem:create', itemInfo, (res: any) => {
-        resolve({ status: 'success', payload: res.payload });
-      });
+      this.socket.emit(
+        'shoppingListItem:create',
+        itemInfo,
+        (res: SuccessResponse<Item>) => {
+          resolve({ status: 'success', payload: res.payload });
+        },
+      );
     });
   }
 
-  public listItems(): Promise<IServiceResponse<IItem[]>> {
+  public listItems(): Promise<SuccessResponse<Item[]>> {
     return new Promise((resolve, reject) => {
-      this.socket.emit('shoppingListItem:list', (res: any) => {
-        resolve({ status: 'success', payload: res.payload });
-      });
+      this.socket.emit(
+        'shoppingListItem:list',
+        (res: SuccessResponse<Item[]>) => {
+          resolve({ status: 'success', payload: res.payload });
+        },
+      );
     });
   }
 }
