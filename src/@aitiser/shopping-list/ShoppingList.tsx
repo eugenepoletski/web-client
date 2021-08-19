@@ -1,35 +1,43 @@
 import React, { useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
 import ListItem from './shoppingList/ListItem';
+import { Service } from './ShoppingListService';
 
-type Items = {
+export interface IItem {
+  id: string;
   title: string;
-}[];
+  completed: boolean;
+}
 
 const ShoppingList = (): JSX.Element => {
-  const [items, setItems] = useState<Items>([]);
+  const [items, setItems] = useState<IItem[]>([]);
 
   useEffect(() => {
-    const socket = io('http://localhost:5000');
+    const service = new Service({ baseUrl: 'http://localhost:5000' });
 
-    socket.on('connect', () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      socket.emit(
-        'shoppingListItem:create',
-        { title: 'Chicken', completed: false },
-        (res: any) => {
-          console.log(res);
-        },
-      );
-    });
+    async function fetchItems(): Promise<any> {
+      try {
+        await service.start();
+        const response = await service.listItems();
 
-    const response = new Promise<Items>((res, rej) => {
-      setTimeout(() => {
-        res([{ title: 'cheese' }, { title: 'eggs' }, { title: 'apples' }]);
-      }, 1000);
-    });
+        switch (response.status) {
+          case 'success':
+            setItems(response.payload);
+            break;
 
-    response.then((_items) => setItems(_items));
+          case 'fail':
+            console.warn(response.payload);
+            break;
+        }
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    fetchItems();
+
+    return function stopService() {
+      service.stop();
+    };
   }, []);
 
   return (
