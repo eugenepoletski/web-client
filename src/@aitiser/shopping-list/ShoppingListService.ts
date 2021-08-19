@@ -1,3 +1,4 @@
+import { rejects } from 'assert';
 import Client from 'socket.io-client';
 
 export interface IServiceConfig {
@@ -27,6 +28,14 @@ export class Service {
   public createItem(itemInfo: any): Promise<any> {
     return new Promise((resolve, reject) => {
       this.socket.emit('shoppingListItem:create', itemInfo, (res) => {
+        resolve({ status: 'success', payload: res.payload });
+      });
+    });
+  }
+
+  public listItems(): Promise<any> {
+    return new Promise((resolve, reject) => {
+      this.socket.emit('shoppingListItem:list', (res) => {
         resolve({ status: 'success', payload: res.payload });
       });
     });

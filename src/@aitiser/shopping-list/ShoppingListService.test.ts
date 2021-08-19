@@ -71,5 +71,33 @@ describe('ShoppingListService', () => {
         });
       });
     });
+
+    describe('List items', () => {
+      it('should list items', async () => {
+        const dummyItem1 = {
+          id: faker.datatype.uuid(),
+          title: faker.lorem.sentence(),
+          completed: faker.datatype.boolean(),
+        };
+        const dummyItem2 = {
+          id: faker.datatype.uuid(),
+          title: faker.lorem.sentence(),
+          completed: faker.datatype.boolean(),
+        };
+        serverSocket.on('shoppingListItem:list', (cb: any) => {
+          cb({
+            status: 'success',
+            payload: [dummyItem1, dummyItem2],
+          });
+        });
+
+        const result = await service.listItems();
+
+        expect(result.status).toBe('success');
+        expect(result.payload).toEqual(
+          expect.arrayContaining([dummyItem1, dummyItem2]),
+        );
+      });
+    });
   });
 });
