@@ -40,12 +40,15 @@ export class Service {
   private socket: any;
 
   constructor({ baseUrl }: IServiceConfig) {
-    this.socket = Client(baseUrl);
+    this.socket = Client(baseUrl, {
+      autoConnect: false,
+    });
   }
 
   public start(): Promise<any> {
     return new Promise((res, rej) => {
       this.socket.on('connect', () => res({}));
+      this.socket.connect();
     });
   }
 
