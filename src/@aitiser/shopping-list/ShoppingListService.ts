@@ -1,8 +1,39 @@
-import { rejects } from 'assert';
 import Client from 'socket.io-client';
 
 export interface IServiceConfig {
   baseUrl: string;
+}
+
+export interface IServiceSuccesResponse<T> {
+  status: 'success';
+  payload: T;
+}
+
+export interface IServiceFailResponse {
+  status: 'fail';
+  payload: {
+    [name: string]: string;
+  };
+}
+
+export interface IServiceErrorResponse {
+  status: 'error';
+  message: string;
+}
+
+export type IServiceResponse<T> =
+  | IServiceSuccesResponse<T>
+  | IServiceFailResponse
+  | IServiceFailResponse;
+
+export interface IItem {
+  id: string;
+  title: string;
+  completed: boolean;
+}
+
+export interface IItemInfo {
+  title: string;
 }
 
 export class Service {
@@ -25,17 +56,17 @@ export class Service {
     });
   }
 
-  public createItem(itemInfo: any): Promise<any> {
+  public createItem(itemInfo: IItemInfo): Promise<IServiceResponse<IItem>> {
     return new Promise((resolve, reject) => {
-      this.socket.emit('shoppingListItem:create', itemInfo, (res) => {
+      this.socket.emit('shoppingListItem:create', itemInfo, (res: any) => {
         resolve({ status: 'success', payload: res.payload });
       });
     });
   }
 
-  public listItems(): Promise<any> {
+  public listItems(): Promise<IServiceResponse<IItem[]>> {
     return new Promise((resolve, reject) => {
-      this.socket.emit('shoppingListItem:list', (res) => {
+      this.socket.emit('shoppingListItem:list', (res: any) => {
         resolve({ status: 'success', payload: res.payload });
       });
     });
