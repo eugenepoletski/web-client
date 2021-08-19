@@ -1,19 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import ListItem from './shoppingList/ListItem';
-import { Service } from './ShoppingListService';
 
-export interface IItem {
+export interface Item {
   id: string;
   title: string;
   completed: boolean;
 }
 
-const ShoppingList = (): JSX.Element => {
-  const [items, setItems] = useState<IItem[]>([]);
+export interface Props {
+  service: any;
+}
+
+const ShoppingList = ({ service }: Props): JSX.Element => {
+  const [items, setItems] = useState<Item[]>([]);
 
   useEffect(() => {
-    const service = new Service({ baseUrl: 'http://localhost:5000' });
-
     async function fetchItems(): Promise<any> {
       try {
         await service.start();
@@ -38,14 +39,14 @@ const ShoppingList = (): JSX.Element => {
     return function stopService() {
       service.stop();
     };
-  }, []);
+  }, [service]);
 
   return (
     <div>
       <h1>Shopping list</h1>
       <ul>
-        {items.map(({ title }) => (
-          <ListItem title={title} />
+        {items.map(({ id, title }) => (
+          <ListItem key={id} title={title} />
         ))}
       </ul>
     </div>

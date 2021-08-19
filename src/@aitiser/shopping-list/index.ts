@@ -1,3 +1,1 @@
-import ShoppingList from './ShoppingList';
-
-export default ShoppingList;
+export { ShoppingListPage } from './ShoppingListPage';
