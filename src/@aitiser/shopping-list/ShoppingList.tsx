@@ -2,14 +2,26 @@ import React, { useEffect, useState, useCallback } from 'react';
 
 import ListItem from './shoppingList/ListItem';
 
+export interface ItemInfo {
+  title: string;
+  completed?: boolean;
+}
+
 export interface Item {
   id: string;
   title: string;
   completed: boolean;
 }
 
+export interface Service {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+  listItems(): Promise<any>;
+  createItem(itemInfo: ItemInfo): Promise<any>;
+}
+
 export interface Props {
-  service: any;
+  service: Service;
 }
 
 const ShoppingList = ({ service }: Props): JSX.Element => {
@@ -17,18 +29,18 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
   const [itemTitle, setItemTitle] = useState('');
 
   useEffect(() => {
-    async function fetchItems(): Promise<any> {
+    async function listItems(): Promise<any> {
       try {
         await service.start();
-        const response = await service.listItems();
+        const result = await service.listItems();
 
-        switch (response.status) {
+        switch (result.status) {
           case 'success':
-            setItems(response.payload);
+            setItems(result.payload);
             break;
 
           case 'fail':
-            console.warn(response.payload);
+            console.warn(result.payload);
             break;
         }
       } catch (err) {
@@ -36,33 +48,33 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
       }
     }
 
-    fetchItems();
+    listItems();
 
     return function stopService() {
       service.stop();
     };
   }, [service]);
 
-  const handleInputChange = useCallback((evt) => {
+  const handleItemTitleChange = useCallback((evt) => {
     setItemTitle(evt.target.value);
   }, []);
 
-  const handleAddItemClick = useCallback(() => {
+  const handleAddItem = useCallback(() => {
     async function createItem(): Promise<any> {
       try {
-        const response = await service.createItem({
+        const result = await service.createItem({
           title: itemTitle,
           completed: false,
         });
 
-        switch (response.status) {
+        switch (result.status) {
           case 'success':
             setItemTitle('');
             // ToDo! refactor to listen for itemCreated ?
-            setItems([response.payload].concat(items.slice()));
+            setItems([result.payload].concat(items.slice()));
             break;
           case 'fail':
-            console.warn(response);
+            console.warn(result);
             break;
         }
       } catch (err) {
@@ -79,9 +91,9 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
       <input
         title="new item input"
         value={itemTitle}
-        onChange={handleInputChange}
+        onChange={handleItemTitleChange}
       />
-      <button title="add item" type="button" onClick={handleAddItemClick}>
+      <button title="add item" type="button" onClick={handleAddItem}>
         Add
       </button>
       <ul>
