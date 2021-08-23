@@ -2,6 +2,7 @@ import React, { useCallback } from 'react';
 import {
   AppBar,
   Button,
+  Container,
   IconButton,
   Toolbar,
   Typography,
@@ -91,7 +92,9 @@ function App(): JSX.Element {
           </Toolbar>
         </AppBar>
       </div>
-      {renderPageComponent({ stateValue: current.value })}
+      <Container>
+        {renderPageComponent({ stateValue: current.value })}
+      </Container>
     </div>
   );
 }

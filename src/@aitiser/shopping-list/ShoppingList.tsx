@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
+import { Typography } from '@material-ui/core';
 
 import { ListItem, NewItem } from './shoppingList';
 
@@ -87,7 +88,9 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
 
   return (
     <div>
-      <h1>Shopping list</h1>
+      <Typography variant="h4" variantMapping={{ h4: 'h1' }}>
+        Shopping List
+      </Typography>
       <NewItem
         title={itemTitle}
         onTitleChange={handleItemTitleChange}
