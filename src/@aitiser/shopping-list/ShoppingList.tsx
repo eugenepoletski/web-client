@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-import ListItem from './shoppingList/ListItem';
-import { NewItem } from './shoppingList';
+import { ListItem, NewItem } from './shoppingList';
 
 export interface ItemInfo {
   title: string;
