@@ -1,15 +1,15 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
-import { ListItem } from './ListItem';
+import { Item } from './Item';
 
-describe('<ListItem />', () => {
+describe('<Item />', () => {
   it('renders w/o crashing', () => {
-    render(<ListItem />);
+    render(<Item />);
   });
 
   describe('title', () => {
     it('renders item title', () => {
-      render(<ListItem title="cheese" />);
+      render(<Item title="cheese" />);
       expect(screen.getAllByText(/cheese/i)).toHaveLength(1);
     });
   });

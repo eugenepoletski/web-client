@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Typography } from '@material-ui/core';
-
-import { ListItem, NewItem } from './shoppingList';
+import { List, Typography } from '@material-ui/core';
+import { Item, NewItem } from './shoppingList';
 
 export interface ItemInfo {
   title: string;
@@ -96,11 +95,11 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
         onTitleChange={handleItemTitleChange}
         onAddItem={handleAddItem}
       />
-      <ul>
+      <List>
         {items.map(({ id, title }) => (
-          <ListItem key={id} title={title} />
+          <Item key={id} title={title} />
         ))}
-      </ul>
+      </List>
     </div>
   );
 };
