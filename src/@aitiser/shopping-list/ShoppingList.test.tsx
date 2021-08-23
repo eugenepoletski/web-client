@@ -122,7 +122,7 @@ describe('<ShoppingList />', () => {
       });
 
       await waitFor(() => {
-        expect(itemInput).not.toContain(dummyItemInfo.title);
+        expect(itemInput).not.toHaveValue(dummyItemInfo.title);
         expect(screen.getAllByText(dummyItemInfo.title)).toHaveLength(1);
       });
     });

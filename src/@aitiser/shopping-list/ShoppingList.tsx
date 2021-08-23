@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
 import ListItem from './shoppingList/ListItem';
+import { NewItem } from './shoppingList';
 
 export interface ItemInfo {
   title: string;
@@ -88,14 +89,11 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
   return (
     <div>
       <h1>Shopping list</h1>
-      <input
-        title="new item input"
-        value={itemTitle}
-        onChange={handleItemTitleChange}
+      <NewItem
+        title={itemTitle}
+        onTitleChange={handleItemTitleChange}
+        onAddItem={handleAddItem}
       />
-      <button title="add item" type="button" onClick={handleAddItem}>
-        Add
-      </button>
       <ul>
         {items.map(({ id, title }) => (
           <ListItem key={id} title={title} />
