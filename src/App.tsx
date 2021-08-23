@@ -1,17 +1,36 @@
 import React, { useCallback } from 'react';
+import {
+  AppBar,
+  Button,
+  IconButton,
+  Toolbar,
+  Typography,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Menu as MenuIcon } from '@material-ui/icons';
 import { useMachine } from '@xstate/react';
 import { StateValue } from 'xstate';
 import controllerMachine, {
   STATE_DASHBOARD,
   STATE_SHOPPING_LIST,
 } from './pagesMachine';
-import navigationSchema, {
-  NAV_HOME,
-  NAV_SHOPPING_LIST,
-} from './navigationSchema';
-import Navigation from './common/Navigation/Navigation';
 import Dashboard from './pages/Dashboard';
 import { ShoppingListPage } from './@aitiser/shopping-list';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1,
+  },
+  menuButton: {
+    marginRight: theme.spacing(2),
+  },
+  title: {
+    flexGrow: 1,
+  },
+}));
+
+export const NAV_HOME = 'home';
+export const NAV_SHOPPING_LIST = 'shoppingList';
 
 const getStateByNavs = (name: string): StateValue | undefined =>
   ({
@@ -37,6 +56,7 @@ const renderPageComponent = ({
 };
 
 function App(): JSX.Element {
+  const classes = useStyles();
   const [current, send] = useMachine(controllerMachine);
 
   const handleNavigationClick = useCallback(
@@ -46,7 +66,31 @@ function App(): JSX.Element {
 
   return (
     <div className="App">
-      <Navigation schema={navigationSchema} onClick={handleNavigationClick} />
+      <div className={classes.root}>
+        <AppBar position="static">
+          <Toolbar>
+            <IconButton
+              edge="start"
+              className={classes.menuButton}
+              color="inherit"
+              aria-label="menu"
+              onClick={(evt) => handleNavigationClick(evt, { name: NAV_HOME })}
+            >
+              <MenuIcon />
+            </IconButton>
+            <Button
+              color="inherit"
+              onClick={(evt) =>
+                handleNavigationClick(evt, { name: NAV_SHOPPING_LIST })
+              }
+            >
+              <Typography variant="h6" className={classes.title}>
+                Shopping List
+              </Typography>
+            </Button>
+          </Toolbar>
+        </AppBar>
+      </div>
       {renderPageComponent({ stateValue: current.value })}
     </div>
   );
