@@ -27,6 +27,8 @@ export interface Props {
 const ShoppingList = ({ service }: Props): JSX.Element => {
   const [items, setItems] = useState<Item[]>([]);
   const [itemTitle, setItemTitle] = useState('');
+  const [hasCreateItemError, setHasCreateItemError] = useState(false);
+  const [createItemHelperText, setCreateItemHelperText] = useState(' ');
 
   useEffect(() => {
     async function listItems(): Promise<any> {
@@ -74,7 +76,8 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
             setItems([result.payload].concat(items.slice()));
             break;
           case 'fail':
-            console.warn(result);
+            setHasCreateItemError(true);
+            setCreateItemHelperText(result.payload.title);
             break;
         }
       } catch (err) {
@@ -94,10 +97,14 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
         title={itemTitle}
         onTitleChange={handleItemTitleChange}
         onAddItem={handleAddItem}
+        error={hasCreateItemError}
+        helperText={createItemHelperText}
       />
       <List>
         {items.map(({ id, title }) => (
-          <Item key={id} title={title} />
+          <React.Fragment key={id}>
+            <Item title={title} />
+          </React.Fragment>
         ))}
       </List>
     </div>

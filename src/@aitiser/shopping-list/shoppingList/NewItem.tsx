@@ -5,12 +5,16 @@ export interface Props {
   title: string;
   onTitleChange: (evt: SyntheticEvent) => void;
   onAddItem: (evt: SyntheticEvent) => void;
+  error?: boolean;
+  helperText?: string;
 }
 
 export const NewItem = ({
   title,
   onTitleChange,
   onAddItem,
+  error,
+  helperText,
 }: Props): JSX.Element => (
   <Grid container spacing={1} alignItems="flex-end">
     <Grid item>
@@ -20,6 +24,8 @@ export const NewItem = ({
         value={title}
         onChange={onTitleChange}
         inputProps={{ title: 'new item input' }}
+        error={error}
+        helperText={helperText}
       />
     </Grid>
     <Grid item>

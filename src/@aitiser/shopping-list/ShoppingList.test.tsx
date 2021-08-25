@@ -47,7 +47,7 @@ describe('<ShoppingList />', () => {
     expect(screen.getAllByText(/shopping list/i)).toHaveLength(1);
   });
 
-  describe('Item management', () => {
+  describe('Item List', () => {
     it('renders list of items', async () => {
       const dummyItem1 = {
         id: faker.datatype.uuid(),
@@ -74,7 +74,9 @@ describe('<ShoppingList />', () => {
       expect(screen.getAllByText(dummyItem1.title)).toHaveLength(1);
       expect(screen.getAllByText(dummyItem2.title)).toHaveLength(1);
     });
+  });
 
+  describe('New Item', () => {
     it('creates new item', async () => {
       const dummyItemInfo = {
         title: faker.lorem.sentence(),
@@ -124,6 +126,34 @@ describe('<ShoppingList />', () => {
       await waitFor(() => {
         expect(itemInput).not.toHaveValue(dummyItemInfo.title);
         expect(screen.getAllByText(dummyItemInfo.title)).toHaveLength(1);
+      });
+    });
+
+    it('shows validation error message recieved from backend', async () => {
+      const dummyFailResult = {
+        status: 'fail',
+        payload: {
+          title: '"title" is missing',
+        },
+      };
+      jest
+        .spyOn(mockedShoppingListService, 'createItem')
+        .mockImplementationOnce(() => Promise.resolve(dummyFailResult));
+      render(<ShoppingList service={mockedShoppingListService} />);
+      const itemInput = screen.getByTitle(/new item input/i);
+      const addItemButton = screen.getByTitle(/add item/i);
+
+      act(() => {
+        fireEvent.focusIn(itemInput);
+        fireEvent.change(itemInput, { target: { value: ' ' } });
+        fireEvent.focusOut(itemInput);
+        fireEvent.click(addItemButton);
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByText(dummyFailResult.payload.title)).toHaveLength(
+          1,
+        );
       });
     });
   });

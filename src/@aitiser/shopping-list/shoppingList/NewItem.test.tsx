@@ -74,4 +74,19 @@ describe('<NewItem />', () => {
       expect(mockedAddItem).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('helperText', () => {
+    it('renders helper text', () => {
+      render(
+        <NewItem
+          title="Banana"
+          onTitleChange={mockedOnTitleChange}
+          onAddItem={mockedAddItem}
+          helperText="wrong banana!"
+        />,
+      );
+
+      expect(screen.getAllByText(/wrong banana!/i)).toHaveLength(1);
+    });
+  });
 });

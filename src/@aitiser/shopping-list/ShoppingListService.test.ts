@@ -70,6 +70,28 @@ describe('ShoppingListService', () => {
           completed: dummyItem.completed,
         });
       });
+
+      it('should return validation error(s) with message(s)', async () => {
+        const dummyItemInfo = {
+          title: ' ',
+        };
+        const dummyErrorMessage = faker.lorem.sentence();
+        serverSocket.on('shoppingListItem:create', (itemInfo: any, cb: any) => {
+          cb({
+            status: 'fail',
+            payload: {
+              title: dummyErrorMessage,
+            },
+          });
+        });
+
+        const result = await service.createItem(dummyItemInfo);
+
+        expect(result.status).toBe('fail');
+        expect(result.payload).toMatchObject({
+          title: dummyErrorMessage,
+        });
+      });
     });
 
     describe('List items', () => {

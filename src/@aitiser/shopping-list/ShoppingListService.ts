@@ -57,13 +57,22 @@ export class Service {
     });
   }
 
-  public createItem(itemInfo: ItemInfo): Promise<SuccessResponse<Item>> {
+  public createItem(
+    itemInfo: ItemInfo,
+  ): Promise<SuccessResponse<Item> | FailResponse> {
     return new Promise((resolve, reject) => {
       this.socket.emit(
         'shoppingListItem:create',
         itemInfo,
-        (res: SuccessResponse<Item>) => {
-          resolve({ status: 'success', payload: res.payload });
+        (response: SuccessResponse<Item> | FailResponse) => {
+          switch (response.status) {
+            case 'success':
+              resolve({ status: 'success', payload: response.payload });
+              break;
+            case 'fail':
+              resolve({ status: 'fail', payload: response.payload });
+              break;
+          }
         },
       );
     });

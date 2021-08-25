@@ -5,7 +5,7 @@ type Props = {
   title?: string;
 };
 
-const defaultProps: Props = {
+const defaultProps = {
   title: '',
 };
 
