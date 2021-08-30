@@ -19,18 +19,18 @@ export const NewItem = ({
   <Grid container spacing={1} alignItems="flex-end">
     <Grid item>
       <TextField
-        label="new item"
+        label="title"
         type="text"
         value={title}
         onChange={onTitleChange}
-        inputProps={{ title: 'new item input' }}
+        inputProps={{ title: 'item title' }}
         error={error}
         helperText={helperText}
       />
     </Grid>
     <Grid item>
       <Button title="add item" type="button" onClick={onAddItem}>
-        Add
+        ADD ITEM
       </Button>
     </Grid>
   </Grid>

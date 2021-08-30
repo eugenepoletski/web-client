@@ -31,7 +31,7 @@ describe('<NewItem />', () => {
           onAddItem={mockedAddItem}
         />,
       );
-      const input = screen.getByTitle(/new item input/i);
+      const input = screen.getByTitle(/item title/i);
 
       expect(input).toHaveValue('Carrots');
     });
@@ -46,7 +46,7 @@ describe('<NewItem />', () => {
           onAddItem={mockedAddItem}
         />,
       );
-      const input = screen.getByTitle(/new item input/i);
+      const input = screen.getByTitle(/item title/i);
 
       act(() => {
         fireEvent.change(input, { target: { value: 'a' } });
@@ -65,7 +65,7 @@ describe('<NewItem />', () => {
           onAddItem={mockedAddItem}
         />,
       );
-      const addButton = screen.getByText(/add/i);
+      const addButton = screen.getByText(/add item/i);
 
       act(() => {
         fireEvent.click(addButton);

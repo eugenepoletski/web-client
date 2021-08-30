@@ -113,8 +113,8 @@ describe('<ShoppingList />', () => {
           screen.getByText('The component is ready for testing!'),
         ).toBeInTheDocument(),
       );
-      const itemInput = screen.getByTitle(/new item input/i);
-      const addItemButton = screen.getByText(/add/i);
+      const itemInput = screen.getByTitle(/item title/i);
+      const addItemButton = screen.getByText(/add item/i);
 
       act(() => {
         fireEvent.focusIn(itemInput);
@@ -140,7 +140,7 @@ describe('<ShoppingList />', () => {
         .spyOn(mockedShoppingListService, 'createItem')
         .mockImplementationOnce(() => Promise.resolve(dummyFailResult));
       render(<ShoppingList service={mockedShoppingListService} />);
-      const itemInput = screen.getByTitle(/new item input/i);
+      const itemInput = screen.getByTitle(/item title/i);
       const addItemButton = screen.getByTitle(/add item/i);
 
       act(() => {
