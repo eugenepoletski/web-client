@@ -159,7 +159,7 @@ describe('<ShoppingList />', () => {
   });
 
   describe('Edit item', () => {
-    it('switches to item edit mode when a user clicks on an item', async () => {
+    it.skip('successfully edits an item', async () => {
       const dummyItemTitle = faker.lorem.sentence().slice(0, 50);
       jest
         .spyOn(mockedShoppingListService, 'listItems')

@@ -3,27 +3,52 @@ import { ListItem, ListItemText, TextField } from '@material-ui/core';
 
 type Props = {
   title?: string;
+  onTitleEdited: (obj: any) => void;
 };
 
 const defaultProps = {
   title: '',
 };
 
-export const Item = ({ title }: Props): JSX.Element => {
+export const Item = ({ title, onTitleEdited }: Props): JSX.Element => {
   const [mode, setMode] = useState('DEFAULT');
+  const [_title, setTitle] = useState(title);
 
-  const switchToEditMode = useCallback(() => {
+  const switchToDefaultMode = (): void => {
+    setMode('DEFAULT');
+  };
+  const switchToEditMode = (): void => {
     setMode('EDITING');
+  };
+  const focusOnItemTitleInput = (elem: any): void => {
+    if (elem) {
+      elem.focus();
+    }
+  };
+
+  const handleTitleChange = useCallback((evt) => {
+    setTitle(evt.target.value);
   }, []);
+
+  const handleTitleInputBlur = (): void => {
+    switchToDefaultMode();
+    if (title !== _title) {
+      onTitleEdited({ value: _title });
+    }
+  };
 
   if (mode === 'EDITING') {
     return (
       <ListItem>
         <TextField
           type="text"
-          value={title}
-          // onChange={onTitleChange}
-          inputProps={{ title: 'item title' }}
+          value={_title}
+          onChange={handleTitleChange}
+          inputProps={{
+            ref: focusOnItemTitleInput,
+            title: 'item title',
+            onBlur: handleTitleInputBlur,
+          }}
           // error={error}
           // helperText={helperText}
         />

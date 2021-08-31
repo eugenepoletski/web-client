@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { List, Typography } from '@material-ui/core';
+import { StringDecoder } from 'string_decoder';
 import { Item, NewItem } from './shoppingList';
 
 export interface ItemInfo {
@@ -27,6 +28,7 @@ export interface Props {
 const ShoppingList = ({ service }: Props): JSX.Element => {
   const [items, setItems] = useState<Item[]>([]);
   const [itemTitle, setItemTitle] = useState('');
+  const [editableItemTitle, setEditableITemTitle] = useState('');
   const [hasCreateItemError, setHasCreateItemError] = useState(false);
   const [createItemHelperText, setCreateItemHelperText] = useState(' ');
 
@@ -88,6 +90,13 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
     createItem();
   }, [itemTitle, items, service]);
 
+  // eslint-disable-next-line max-len
+  const makeItemTitleEditedHandler =
+    (id: string) =>
+    ({ value }: { value: string }) => {
+      console.log(id, value);
+    };
+
   return (
     <div>
       <Typography variant="h4" variantMapping={{ h4: 'h1' }}>
@@ -103,7 +112,10 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
       <List>
         {items.map(({ id, title }) => (
           <React.Fragment key={id}>
-            <Item title={title} />
+            <Item
+              title={title}
+              onTitleEdited={makeItemTitleEditedHandler(id)}
+            />
           </React.Fragment>
         ))}
       </List>
