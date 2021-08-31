@@ -47,7 +47,7 @@ describe('<ShoppingList />', () => {
     expect(screen.getAllByText(/shopping list/i)).toHaveLength(1);
   });
 
-  describe('Item List', () => {
+  describe('Item list', () => {
     it('renders list of items', async () => {
       const dummyItem1 = {
         id: faker.datatype.uuid(),
@@ -76,7 +76,7 @@ describe('<ShoppingList />', () => {
     });
   });
 
-  describe('New Item', () => {
+  describe('Add item', () => {
     it('creates new item', async () => {
       const dummyItemInfo = {
         title: faker.lorem.sentence(),
@@ -153,6 +153,41 @@ describe('<ShoppingList />', () => {
       await waitFor(() => {
         expect(screen.getAllByText(dummyFailResult.payload.title)).toHaveLength(
           1,
+        );
+      });
+    });
+  });
+
+  describe('Edit item', () => {
+    it('switches to item edit mode when a user clicks on an item', async () => {
+      const dummyItemTitle = faker.lorem.sentence().slice(0, 50);
+      jest
+        .spyOn(mockedShoppingListService, 'listItems')
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            status: 'success',
+            payload: [
+              {
+                id: faker.datatype.uuid(),
+                title: dummyItemTitle,
+                completed: faker.datatype.boolean(),
+              },
+            ],
+          }),
+        );
+      render(<ShoppingList service={mockedShoppingListService} />);
+      await waitFor(() => {
+        expect(screen.getAllByText(dummyItemTitle)).toHaveLength(1);
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByText(dummyItemTitle));
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByDisplayValue(dummyItemTitle)).toHaveLength(1);
+        expect(screen.getByDisplayValue(dummyItemTitle)).toHaveValue(
+          dummyItemTitle,
         );
       });
     });

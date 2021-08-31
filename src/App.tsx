@@ -81,6 +81,7 @@ function App(): JSX.Element {
             </IconButton>
             <Button
               color="inherit"
+              // eslint-disable-next-line max-len
               onClick={(evt) =>
                 handleNavigationClick(evt, { name: NAV_SHOPPING_LIST })
               }
