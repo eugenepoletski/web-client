@@ -88,4 +88,24 @@ export class Service {
       );
     });
   }
+
+  public updateItem(
+    itemId: string,
+    itemUpdate: ItemInfo,
+  ): Promise<SuccessResponse<Item>> {
+    return new Promise((resolve, reject) => {
+      this.socket.emit(
+        'shoppingListItem:update',
+        itemId,
+        itemUpdate,
+        (response: SuccessResponse<Item>) => {
+          switch (response.status) {
+            case 'success':
+              resolve({ status: 'success', payload: response.payload });
+              break;
+          }
+        },
+      );
+    });
+  }
 }

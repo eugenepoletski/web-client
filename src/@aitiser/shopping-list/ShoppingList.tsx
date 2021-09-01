@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { List, Typography } from '@material-ui/core';
-import { StringDecoder } from 'string_decoder';
 import { Item, NewItem } from './shoppingList';
 
 export interface ItemInfo {
@@ -19,6 +18,7 @@ export interface Service {
   stop(): Promise<void>;
   listItems(): Promise<any>;
   createItem(itemInfo: ItemInfo): Promise<any>;
+  updateItem(itemId: string, itemUpdate: ItemInfo): Promise<any>;
 }
 
 export interface Props {
@@ -28,7 +28,6 @@ export interface Props {
 const ShoppingList = ({ service }: Props): JSX.Element => {
   const [items, setItems] = useState<Item[]>([]);
   const [itemTitle, setItemTitle] = useState('');
-  const [editableItemTitle, setEditableITemTitle] = useState('');
   const [hasCreateItemError, setHasCreateItemError] = useState(false);
   const [createItemHelperText, setCreateItemHelperText] = useState(' ');
 
@@ -74,7 +73,6 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
         switch (result.status) {
           case 'success':
             setItemTitle('');
-            // ToDo! refactor to listen for itemCreated ?
             setItems([result.payload].concat(items.slice()));
             break;
           case 'fail':
@@ -90,11 +88,40 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
     createItem();
   }, [itemTitle, items, service]);
 
-  // eslint-disable-next-line max-len
   const makeItemTitleEditedHandler =
     (id: string) =>
-    ({ value }: { value: string }) => {
-      console.log(id, value);
+    ({ value: title }: { value: string }) => {
+      async function updateItem(): Promise<any> {
+        try {
+          const result = await service.updateItem(id, { title });
+
+          switch (result.status) {
+            case 'success':
+              setItems(
+                items.map((item) => {
+                  if (item.id !== id) {
+                    return item;
+                  }
+                  return result.payload;
+                }),
+              );
+              break;
+            case 'fail':
+              console.warn(result.payload);
+              break;
+            case 'error':
+              throw new Error(result.message);
+            default:
+              throw new Error(
+                `Unhandled service response status=${result.status}`,
+              );
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      updateItem();
     };
 
   return (

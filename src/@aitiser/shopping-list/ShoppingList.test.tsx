@@ -27,6 +27,10 @@ class MockedShoppingListService {
   public createItem() {
     return jest.fn(() => Promise.resolve());
   }
+
+  public updateItem() {
+    return jest.fn(() => Promise.resolve());
+  }
 }
 
 describe('<ShoppingList />', () => {
@@ -159,37 +163,65 @@ describe('<ShoppingList />', () => {
   });
 
   describe('Edit item', () => {
-    it.skip('successfully edits an item', async () => {
-      const dummyItemTitle = faker.lorem.sentence().slice(0, 50);
+    it('successfully edits an item', async () => {
+      const dummyInitialItem = {
+        id: faker.datatype.uuid(),
+        title: faker.lorem.sentence().slice(0, 50),
+        completed: faker.datatype.boolean(),
+      };
+      const dummyUpdatedItem = {
+        ...dummyInitialItem,
+        title: faker.lorem.sentence().slice(0, 50),
+      };
       jest
         .spyOn(mockedShoppingListService, 'listItems')
         .mockImplementationOnce(() =>
           Promise.resolve({
             status: 'success',
-            payload: [
-              {
-                id: faker.datatype.uuid(),
-                title: dummyItemTitle,
-                completed: faker.datatype.boolean(),
-              },
-            ],
+            payload: [dummyInitialItem],
+          }),
+        );
+      const updateItemSpy = jest
+        .spyOn(mockedShoppingListService, 'updateItem')
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            status: 'success',
+            payload: dummyUpdatedItem,
           }),
         );
       render(<ShoppingList service={mockedShoppingListService} />);
       await waitFor(() => {
-        expect(screen.getAllByText(dummyItemTitle)).toHaveLength(1);
+        expect(screen.getAllByText(dummyInitialItem.title)).toHaveLength(1);
       });
 
       act(() => {
-        fireEvent.click(screen.getByText(dummyItemTitle));
+        fireEvent.click(screen.getByText(dummyInitialItem.title));
       });
 
       await waitFor(() => {
-        expect(screen.getAllByDisplayValue(dummyItemTitle)).toHaveLength(1);
-        expect(screen.getByDisplayValue(dummyItemTitle)).toHaveValue(
-          dummyItemTitle,
+        expect(
+          screen.getAllByDisplayValue(dummyInitialItem.title),
+        ).toHaveLength(1);
+        expect(screen.getByDisplayValue(dummyInitialItem.title)).toHaveValue(
+          dummyInitialItem.title,
         );
       });
+
+      act(() => {
+        fireEvent.change(screen.getByDisplayValue(dummyInitialItem.title), {
+          target: { value: dummyUpdatedItem.title },
+        });
+      });
+
+      act(() => {
+        fireEvent.focusOut(screen.getByDisplayValue(dummyUpdatedItem.title));
+      });
+
+      await waitFor(() => {
+        expect(screen.getAllByText(dummyUpdatedItem.title)).toHaveLength(1);
+      });
+
+      expect(updateItemSpy).toHaveBeenCalledTimes(1);
     });
   });
 });

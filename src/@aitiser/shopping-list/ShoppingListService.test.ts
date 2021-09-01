@@ -121,5 +121,31 @@ describe('ShoppingListService', () => {
         );
       });
     });
+
+    describe('Update an item', () => {
+      it('successfully updates an item', async () => {
+        const dummyItem = {
+          id: faker.datatype.uuid(),
+          title: faker.lorem.sentence().slice(0, 50),
+          completed: faker.datatype.boolean(),
+        };
+        serverSocket.on(
+          'shoppingListItem:update',
+          (id: string, itemUpdate: any, cb: any) => {
+            cb({
+              status: 'success',
+              payload: dummyItem,
+            });
+          },
+        );
+
+        const result = await service.updateItem(dummyItem.id, {
+          title: dummyItem.title,
+        });
+
+        expect(result.status).toBe('success');
+        expect(result.payload).toMatchObject(dummyItem);
+      });
+    });
   });
 });
