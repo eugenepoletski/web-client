@@ -1,3 +1,4 @@
+/* eslint-disable max-classes-per-file */
 /* eslint-disable class-methods-use-this */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import React from 'react';
@@ -10,6 +11,25 @@ import {
 } from '@testing-library/react';
 import faker from 'faker';
 import ShoppingList from './ShoppingList';
+
+type ValidationErrorReason = { [key: string]: string };
+
+interface ValidationError extends Error {
+  reason: ValidationErrorReason;
+}
+
+class ValidationError extends Error implements ValidationError {
+  constructor(reason: ValidationErrorReason, ...params: any[]) {
+    super(...params);
+
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, ValidationError);
+    }
+
+    this.name = 'ValidationError';
+    this.reason = reason;
+  }
+}
 
 class MockedShoppingListService {
   public start() {
@@ -31,6 +51,8 @@ class MockedShoppingListService {
   public updateItem() {
     return jest.fn(() => Promise.resolve());
   }
+
+  public ValidationError = ValidationError;
 }
 
 describe('<ShoppingList />', () => {
@@ -80,8 +102,8 @@ describe('<ShoppingList />', () => {
     });
   });
 
-  describe('Add item', () => {
-    it('creates new item', async () => {
+  describe('Add an item', () => {
+    it('successfully adds a new item', async () => {
       const dummyItemInfo = {
         title: faker.lorem.sentence(),
       };
@@ -133,7 +155,7 @@ describe('<ShoppingList />', () => {
       });
     });
 
-    it('shows validation error message recieved from backend', async () => {
+    it('rejects to add an invalid new item and displays errors', async () => {
       const dummyFailResult = {
         status: 'fail',
         payload: {
@@ -189,6 +211,7 @@ describe('<ShoppingList />', () => {
             payload: dummyUpdatedItem,
           }),
         );
+      expect.assertions(5);
       render(<ShoppingList service={mockedShoppingListService} />);
       await waitFor(() => {
         expect(screen.getAllByText(dummyInitialItem.title)).toHaveLength(1);
@@ -222,6 +245,59 @@ describe('<ShoppingList />', () => {
       });
 
       expect(updateItemSpy).toHaveBeenCalledTimes(1);
+    });
+
+    it('rejects to apply invalid changes to an item', async () => {
+      const dummyInitialItem = {
+        id: faker.datatype.uuid(),
+        title: faker.lorem.sentence().slice(0, 50),
+        completed: faker.datatype.boolean(),
+      };
+      const dummyFailReason = { title: faker.lorem.sentence() };
+      jest
+        .spyOn(mockedShoppingListService, 'listItems')
+        .mockImplementationOnce(() =>
+          Promise.resolve({
+            status: 'success',
+            payload: [dummyInitialItem],
+          }),
+        );
+      jest
+        .spyOn(mockedShoppingListService, 'updateItem')
+        .mockImplementationOnce(() =>
+          Promise.reject(
+            new mockedShoppingListService.ValidationError(dummyFailReason),
+          ),
+        );
+      render(<ShoppingList service={mockedShoppingListService} />);
+      expect.assertions(5);
+      await waitFor(() => {
+        expect(screen.getAllByText(dummyInitialItem.title)).toHaveLength(1);
+      });
+
+      act(() => {
+        fireEvent.click(screen.getByText(dummyInitialItem.title));
+      });
+
+      await waitFor(() => {
+        expect(
+          screen.getAllByDisplayValue(dummyInitialItem.title),
+        ).toHaveLength(1);
+        expect(screen.getByDisplayValue(dummyInitialItem.title)).toHaveValue(
+          dummyInitialItem.title,
+        );
+      });
+
+      expect(screen.queryByText(dummyFailReason.title)).not.toBeInTheDocument();
+
+      const itemTitleInput = screen.getByDisplayValue(dummyInitialItem.title);
+
+      act(() => {
+        fireEvent.change(itemTitleInput, { target: { value: '' } });
+        fireEvent.focusOut(itemTitleInput);
+      });
+
+      expect(screen.getAllByText(dummyFailReason.title)).toHaveLength(1);
     });
   });
 });

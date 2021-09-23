@@ -19,6 +19,7 @@ export interface Service {
   listItems(): Promise<any>;
   createItem(itemInfo: ItemInfo): Promise<any>;
   updateItem(itemId: string, itemUpdate: ItemInfo): Promise<any>;
+  ValidationError: any;
 }
 
 export interface Props {
@@ -117,7 +118,10 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
               );
           }
         } catch (err) {
-          console.error(err);
+          switch (true) {
+            case err instanceof service.ValidationError:
+              console.warn(err.reason);
+          }
         }
       }
 

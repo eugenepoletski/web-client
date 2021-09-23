@@ -1,4 +1,5 @@
 import { io, Socket } from 'socket.io-client';
+import { ValidationError } from '../errors';
 
 export interface ServiceConfig {
   baseUrl: string;
@@ -92,20 +93,25 @@ export class Service {
   public updateItem(
     itemId: string,
     itemUpdate: ItemInfo,
-  ): Promise<SuccessResponse<Item>> {
+  ): Promise<SuccessResponse<Item> | unknown> {
     return new Promise((resolve, reject) => {
       this.socket.emit(
         'shoppingListItem:update',
         itemId,
         itemUpdate,
-        (response: SuccessResponse<Item>) => {
+        (response: SuccessResponse<Item> | FailResponse) => {
           switch (response.status) {
             case 'success':
               resolve({ status: 'success', payload: response.payload });
+              break;
+            case 'fail':
+              reject(new this.ValidationError({ reason: response.payload }));
               break;
           }
         },
       );
     });
   }
+
+  public ValidationError = ValidationError;
 }
