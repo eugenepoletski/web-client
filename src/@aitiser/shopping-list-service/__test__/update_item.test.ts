@@ -41,8 +41,7 @@ describe('shopping-list-service', () => {
         title: dummyItem.title,
       });
 
-      expect(result.status).toBe('success');
-      expect(result.payload).toMatchObject(dummyItem);
+      expect(result).toMatchObject(dummyItem);
     });
   });
 });

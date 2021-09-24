@@ -58,20 +58,21 @@ export class Service {
     });
   }
 
-  public createItem(
-    itemInfo: ItemInfo,
-  ): Promise<SuccessResponse<Item> | FailResponse> {
+  public createItem(itemInfo: ItemInfo): Promise<Item | never> {
     return new Promise((resolve, reject) => {
       this.socket.emit(
         'shoppingListItem:create',
         itemInfo,
-        (response: SuccessResponse<Item> | FailResponse) => {
+        (response: SuccessResponse<Item> | FailResponse | ErrorResponse) => {
           switch (response.status) {
             case 'success':
-              resolve({ status: 'success', payload: response.payload });
+              resolve(response.payload);
               break;
             case 'fail':
-              resolve({ status: 'fail', payload: response.payload });
+              reject(new this.ValidationError({ reason: response.payload }));
+              break;
+            case 'error':
+              reject(new Error(response.message));
               break;
           }
         },
@@ -79,12 +80,18 @@ export class Service {
     });
   }
 
-  public listItems(): Promise<SuccessResponse<Item[]>> {
+  public listItems(): Promise<Item[] | never> {
     return new Promise((resolve, reject) => {
       this.socket.emit(
         'shoppingListItem:list',
-        (res: SuccessResponse<Item[]>) => {
-          resolve({ status: 'success', payload: res.payload });
+        (response: SuccessResponse<Item[]> | ErrorResponse) => {
+          switch (response.status) {
+            case 'success':
+              resolve(response.payload);
+              break;
+            case 'error':
+              reject(new Error(response.message));
+          }
         },
       );
     });
@@ -93,7 +100,7 @@ export class Service {
   public updateItem(
     itemId: string,
     itemUpdate: ItemInfo,
-  ): Promise<SuccessResponse<Item> | unknown> {
+  ): Promise<Item | never> {
     return new Promise((resolve, reject) => {
       this.socket.emit(
         'shoppingListItem:update',
@@ -102,7 +109,7 @@ export class Service {
         (response: SuccessResponse<Item> | FailResponse) => {
           switch (response.status) {
             case 'success':
-              resolve({ status: 'success', payload: response.payload });
+              resolve(response.payload);
               break;
             case 'fail':
               reject(new this.ValidationError({ reason: response.payload }));

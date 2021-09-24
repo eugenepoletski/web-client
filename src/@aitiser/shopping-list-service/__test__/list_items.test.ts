@@ -9,7 +9,7 @@ describe('shopping-list-service', () => {
 
   beforeEach(async () => {
     const { port } = httpServer.address() as AddressInfo;
-    service = new Service({ baseUrl: `https://localhost:${port}` });
+    service = new Service({ baseUrl: `http://localhost:${port}` });
     io.on('connection', (socket: any) => {
       serverSocket = socket;
     });
@@ -41,10 +41,28 @@ describe('shopping-list-service', () => {
 
       const result = await service.listItems();
 
-      expect(result.status).toBe('success');
-      expect(result.payload).toEqual(
-        expect.arrayContaining([dummyItem1, dummyItem2]),
-      );
+      expect(result).toEqual(expect.arrayContaining([dummyItem1, dummyItem2]));
+    });
+
+    it('rejects to list items and reports an error when an error occured', async () => {
+      const dummyErrorMessage = faker.lorem.sentence();
+      serverSocket.on('shoppingListItem:list', (cb: any) => {
+        cb({
+          status: 'error',
+          message: dummyErrorMessage,
+        });
+      });
+
+      expect.assertions(2);
+
+      try {
+        await service.listItems();
+      } catch (err: any) {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(err).toBeInstanceOf(Error);
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(err.message).toBe(dummyErrorMessage);
+      }
     });
   });
 });
