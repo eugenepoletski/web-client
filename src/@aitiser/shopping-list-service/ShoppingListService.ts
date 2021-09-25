@@ -106,7 +106,7 @@ export class Service {
         'shoppingListItem:update',
         itemId,
         itemUpdate,
-        (response: SuccessResponse<Item> | FailResponse) => {
+        (response: SuccessResponse<Item> | FailResponse | ErrorResponse) => {
           switch (response.status) {
             case 'success':
               resolve(response.payload);
@@ -114,6 +114,8 @@ export class Service {
             case 'fail':
               reject(new this.ValidationError({ reason: response.payload }));
               break;
+            case 'error':
+              reject(new Error(response.message));
           }
         },
       );
