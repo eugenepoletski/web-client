@@ -3,14 +3,23 @@ import { ListItem, ListItemText, TextField } from '@material-ui/core';
 
 type Props = {
   title?: string;
+  error?: boolean;
+  helperText?: string;
   onTitleEdited: (obj: any) => void;
 };
 
 const defaultProps = {
   title: '',
+  error: false,
+  helperText: '',
 };
 
-export const Item = ({ title, onTitleEdited }: Props): JSX.Element => {
+export const Item = ({
+  title,
+  error,
+  helperText,
+  onTitleEdited,
+}: Props): JSX.Element => {
   const [mode, setMode] = useState('DEFAULT');
   const [_title, setTitle] = useState(title);
 
@@ -49,8 +58,8 @@ export const Item = ({ title, onTitleEdited }: Props): JSX.Element => {
             title: 'item title',
             onBlur: handleTitleInputBlur,
           }}
-          // error={error}
-          // helperText={helperText}
+          error={error}
+          helperText={helperText}
         />
       </ListItem>
     );

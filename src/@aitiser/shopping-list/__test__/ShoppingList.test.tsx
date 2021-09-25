@@ -10,7 +10,7 @@ import {
   waitFor,
 } from '@testing-library/react';
 import faker from 'faker';
-import ShoppingList from './ShoppingList';
+import ShoppingList from '../ShoppingList';
 
 type ValidationErrorReason = { [key: string]: string };
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { act } from 'react-dom/test-utils';
-import { NewItem } from './NewItem';
+import { NewItem } from '../NewItem';
 
 describe('<NewItem />', () => {
   const dummyTitle = '';

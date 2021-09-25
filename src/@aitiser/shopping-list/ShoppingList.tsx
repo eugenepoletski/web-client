@@ -81,7 +81,7 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
             setCreateItemHelperText(result.payload.title);
             break;
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error(err.message);
       }
     }
@@ -117,7 +117,7 @@ const ShoppingList = ({ service }: Props): JSX.Element => {
                 `Unhandled service response status=${result.status}`,
               );
           }
-        } catch (err) {
+        } catch (err: any) {
           switch (true) {
             case err instanceof service.ValidationError:
               console.warn(err.reason);
